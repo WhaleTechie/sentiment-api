@@ -11,9 +11,9 @@ class SentimentModel:
 
     def predict(self, text: str):
         inputs = self.tokenizer(text, return_tensors="pt")
-        with torch.no_grad():
-            outputs = self.model(**inputs)
-            probs = F.softmax(outputs.logits, dim=1)
-            score, label_idx = torch.max(probs, dim=1)
+        with torch.no_grad(): #prevents training mode, speeds up inference
+            outputs = self.model(**inputs) #runs the forward pass on the model (PyTorch under the hood
+            probs = F.softmax(outputs.logits, dim=1) #converts model’s raw scores (logits) into probabilities
+            score, label_idx = torch.max(probs, dim=1) #picks the label with the highest probability.
             label = "POSITIVE" if label_idx.item() == 1 else "NEGATIVE"
             return {"label": label, "score": score.item()}
